@@ -40,22 +40,22 @@ class Process():
 
     def startProcess(self):
         try:
-            if self._dataCollector.process() == False:
-                print('Not able to get data from newsAPI')
-                return
+            # # if self._dataCollector.process() == False:
+            # #     print('Not able to get data from newsAPI')
+            # #     return
 
-            # df_articles =  self._dataPicker.process()
-            # if df_articles is None:
-            #     print('Not able to retrieve articles data')
-            #     return
-            # elif self._dataPreProcessor.process(df_articles) == False:
-            #     print('Preprocessing failed')
-            #     return
-            # elif self._dataAnalyzer.process(df_articles) == False:
-            #     print('Data analyzer error')
-            #     return
-            # elif self._dataFeatureGenerator.process(df_articles):
-            #     print('Features genearated. so starting extracting data')
+            df_articles =  self._dataPicker.process()
+            if df_articles is None:
+                print('Not able to retrieve articles data')
+                return
+            elif self._dataPreProcessor.process(df_articles) == False:
+                print('Preprocessing failed')
+                return
+            elif self._dataAnalyzer.process(df_articles) == False:
+                print('Data analyzer error')
+                return
+            elif self._dataFeatureGenerator.process(df_articles):
+                print('Features genearated. so starting extracting data')
             features  = self._dataExtractor.process()
             # if not features:
             #     print('error in data extractor')

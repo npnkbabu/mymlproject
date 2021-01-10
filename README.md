@@ -70,3 +70,12 @@ Feature store : This should be common for both Experimental and production pipel
 # Architecture:
 We use docker for components setup and google colab for coding 
 There are 2 data sources. one is Postgres container where we take batch data for experimentation.Another data source is Kafka container which will use NEWSAPI to extract data. and this data is production data which will be processed by spark container and provide topics. we execute the code in local maachine so that it will connect to mongo db, kafka and spark containers and process the data. we check for triggering mechanism depeding on model performance.
+
+created postgres and pgadmin container with connected volumes in docker compose.
+To restore the newdb_bkup from local to postgres container
+docker cp <local path/newsdb_bkup>  0c495e1c5bf7:/backups
+docker exec -it <postgres_container_id> bash
+pg_restore -U postgres -d newsdb newsdb_bkup
+
+Now once db is regstore it will be automatically mapped to our local volume which is configured in postgres image.
+

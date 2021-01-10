@@ -9,14 +9,19 @@ class NewsDatabase():
         print('database instantiated')
 
     @staticmethod
-    def dumpSources(sources):
-        try:
-            connection = psycopg2.connect(
+    def getConnection():
+        return psycopg2.connect(
                                         user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
                                         password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
                                         host = '172.19.0.2',
                                         port = '5432',
                                         database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+    
+
+    @staticmethod
+    def dumpSources(sources):
+        try:
+            connection = NewsDatabase.getConnection()
             cursor = connection.cursor()
             sql = '''TRUNCATE TABLE newsdata.source_details RESTART IDENTITY CASCADE'''
             cursor.execute(sql)
@@ -43,12 +48,7 @@ class NewsDatabase():
     @staticmethod
     def dumpNewsData(data):
         try:
-            connection = psycopg2.connect(
-                                        user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
-                                        password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
-                                        host = 'localhost',
-                                        port = '5432',
-                                        database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+            connection = NewsDatabase.getConnection()
             cursor = connection.cursor()
             #truncate news_data
             sql = '''TRUNCATE TABLE newsdata.news_data RESTART IDENTITY CASCADE'''
@@ -87,12 +87,7 @@ class NewsDatabase():
     def getArticlesData():
         print('getting articles data')
         try:
-            connection = psycopg2.connect(
-                                        user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
-                                        password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
-                                        host = 'localhost',
-                                        port = '5432',
-                                        database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+            connection = NewsDatabase.getConnection()
             cursor = connection.cursor()
             sqlArticle = '''select article_id,content->>'content' as content from newsdata.article order by article_id '''
             cursor.execute(sqlArticle)
@@ -115,12 +110,7 @@ class NewsDatabase():
     @staticmethod
     def dumpFeatures(lstData):
         try:
-            connection = psycopg2.connect(
-                                        user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
-                                        password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
-                                        host = 'localhost',
-                                        port = '5432',
-                                        database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+            connection = NewsDatabase.getConnection()
             cursor = connection.cursor()
 
             #drop existing features
@@ -149,12 +139,7 @@ class NewsDatabase():
     @staticmethod
     def GetFeatures():
         try:
-            connection = psycopg2.connect(
-                                        user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
-                                        password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
-                                        host = 'localhost',
-                                        port = '5432',
-                                        database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+            connection = NewsDatabase.getConnection()
             cursor = connection.cursor()
 
             #load tokens and tfidf into files

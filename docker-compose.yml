@@ -3,7 +3,7 @@ version: '3.5'
 services:
   mypostgres:
     container_name: postgres_container
-    image: postgres:10.15-alpine
+    image: postgres
     env_file: 
       - ./TopicExtractor/.envs/.local/.mypostgres
     volumes: 
@@ -27,6 +27,8 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+    links: 
+      - "mypostgres:pgsql_server"
   
 networks:
   postgres:
