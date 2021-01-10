@@ -9,24 +9,53 @@ from datetime import datetime, timedelta
 from utils.database import NewsDatabase
 from utils.processor import Processor
 
+from kafka import KafkaProducer
+import json
+import time
 
 class DataCollector(Processor):
     def __init__(self):
         print('DataCollector instatiated')
 
-    def process(self):
+    def process(self,DataCollectionconfig):
         try:
+            self.config = DataCollectionconfig
             self.key = os.getenv('MYMLPROJECT_NEWS_API_KEY')
             if self.key is None:
                 print('Not able to extract news_api key')
                 return
             self.newsapi = NewsApiClient(self.key)
-            if self.__storeSources():
-                self.__storeArticles()
+            #if self.__storeSources():
+            if self.config['EnableOffline']:
+                self.__storeOfflineArticles()
+            if self.config['EnableOnline']:
+                self.__startKafkaProducer()
+                self.__startKafkaConsumer()
+            
             return True
         except Exception as ex:
             print('error occured in process : {}'.format(ex))
             return False
+    
+    def __startKafkaConsumer(self):
+        print('starting kafka consumer')
+
+    def json_serializer(self,data):
+        return json.dumps(data).encode('utf-8')
+
+    def __startKafkaProducer(self):
+        print('starting kafka producer with headlines')
+        producer = KafkaProducer(bootstrap_servers=['172.18.0.3:9092'],value_serializer=self.json_serializer)
+        while 1==1:
+            data = self.__getHeadlines()
+            for x in data:
+                producer.send(self.config['kafka']['topicname'],x)
+
+    def __getHeadlines(self):
+        #return ['test1','test2']
+        response = self.newsapi.get_top_headlines(sources='abc-news',language='en')
+        if response['status'] == 'ok':
+            return response['articles']
     
     def __storeSources(self):
         srcResponse = self.newsapi.get_sources()
@@ -41,7 +70,7 @@ class DataCollector(Processor):
     This function gets all articles available and store them in postgress db.
     for dev account we can get max 100 articles
     '''
-    def __storeArticles(self):
+    def __storeOfflineArticles(self):
         try:
             print('Storing all articles')
             pageSize = 100

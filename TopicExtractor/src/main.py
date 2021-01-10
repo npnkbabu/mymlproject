@@ -40,14 +40,20 @@ class Process():
 
     def startProcess(self):
         try:
-            # # if self._dataCollector.process() == False:
-            # #     print('Not able to get data from newsAPI')
-            # #     return
-
+            #collect the data from news API ?
+            DataCollectionconfig = self.config.get('Data')['Collection']
+            if DataCollectionconfig.get('Collect'):
+                if self._dataCollector.process(DataCollectionconfig) == False:
+                    print('Not able to get data from newsAPI')
+                    return
+            
+            #get data from database
             df_articles =  self._dataPicker.process()
             if df_articles is None:
                 print('Not able to retrieve articles data')
                 return
+            
+            #start preprocessing and insert data into feature store
             elif self._dataPreProcessor.process(df_articles) == False:
                 print('Preprocessing failed')
                 return
@@ -56,6 +62,8 @@ class Process():
                 return
             elif self._dataFeatureGenerator.process(df_articles):
                 print('Features genearated. so starting extracting data')
+
+            #collect features and prepare model
             features  = self._dataExtractor.process()
             # if not features:
             #     print('error in data extractor')

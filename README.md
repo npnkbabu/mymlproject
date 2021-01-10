@@ -73,9 +73,21 @@ There are 2 data sources. one is Postgres container where we take batch data for
 
 created postgres and pgadmin container with connected volumes in docker compose.
 To restore the newdb_bkup from local to postgres container
-docker cp <local path/newsdb_bkup>  0c495e1c5bf7:/backups
-docker exec -it <postgres_container_id> bash
-pg_restore -U postgres -d newsdb newsdb_bkup
-
+a. docker cp <local path/newsdb_bkup>  0c495e1c5bf7:/backups
+b. docker exec -it <postgres_container_id> bash
+c. pg_restore -U postgres -d newsdb newsdb_bkup
 Now once db is regstore it will be automatically mapped to our local volume which is configured in postgres image.
 
+setting spark
+create spark container and process preprocessing jobs through spark
+
+setting kafka container
+set kafka from docker-compose and mention topic "KAFKA_CREATE_TOPICS". in order to test it use below procedure
+a. set 2 bash terminals from  kakfa container. one for producer and another for consumer
+b. enter below command in producer to send a message to "test" topic (provided you already created "test" topic from KAFKA_CREATE_TOPICS). It will show ">" waiting for a message
+kafka-console-producer.sh --broker-list localhost:9092 --topic test
+c. come to consumer terminal and enter below command to start listening 
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test
+d. come back to producer terminal and enter a message. which should appear in consumer terminal
+
+Now we need to take "headline" news and send through kafka producer and consumer in datapicker will be waiting for message once received need to run the prediction service.

@@ -1,6 +1,23 @@
 {
-  "Test":
+  "Data":
   {
-    "Testing":1
+    "Collection":
+    {
+      "Collect":true,
+      "EnableOffline":false,
+      "EnableOnline":true,
+      "kafka":
+      {
+        "topicname":"newsfeedtopic"
+      }
+    },
+    "PreProcessing":
+    {
+
+    }
+  },
+  "Model":
+  {
+
   }
 }

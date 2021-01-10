@@ -30,6 +30,22 @@ services:
     links: 
       - "mypostgres:pgsql_server"
   
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    env_file: 
+      - ./TopicExtractor/.envs/.local/.kafka
+    volumes:
+      - kafka:/var/run/docker.sock
+    depends_on: 
+      - zookeeper
+  
 networks:
   postgres:
     driver: bridge
@@ -38,3 +54,4 @@ volumes:
   local_postgres_data:
   local_postgres_bkup_data:
   pgadmin:
+  kafka:
