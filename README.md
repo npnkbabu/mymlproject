@@ -84,7 +84,7 @@ create spark container and process preprocessing jobs through spark
 setting kafka container
 set kafka from docker-compose and mention topic "KAFKA_CREATE_TOPICS". in order to test it use below procedure
 a. set 2 bash terminals from  kakfa container. one for producer and another for consumer
-b. enter below command in producer to send a message to "test" topic (provided you already created "test" topic from KAFKA_CREATE_TOPICS). It will show ">" waiting for a message
+b. enter below command in producer to send a message to "newsfeedtopic" topic (provided you already created "newsfeedtopic" topic from KAFKA_CREATE_TOPICS). It will show ">" waiting for a message
 kafka-console-producer.sh --broker-list localhost:9092 --topic test
 c. come to consumer terminal and enter below command to start listening 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test

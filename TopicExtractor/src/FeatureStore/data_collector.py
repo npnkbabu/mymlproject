@@ -8,10 +8,11 @@ from newsapi import NewsApiClient
 from datetime import datetime, timedelta
 from utils.database import NewsDatabase
 from utils.processor import Processor
-
-from kafka import KafkaProducer
+import threading
+from kafka import KafkaProducer, KafkaConsumer
 import json
 import time
+from pprint import pprint
 
 class DataCollector(Processor):
     def __init__(self):
@@ -29,8 +30,10 @@ class DataCollector(Processor):
             if self.config['EnableOffline']:
                 self.__storeOfflineArticles()
             if self.config['EnableOnline']:
-                self.__startKafkaProducer()
-                self.__startKafkaConsumer()
+                producerThread = threading.Thread(target=self.__startKafkaProducer,daemon=True)
+                producerThread.start()
+                consumerThread = threading.Thread(target=self.__startKafkaConsumer,daemon=True)
+                consumerThread.start()
             
             return True
         except Exception as ex:
@@ -39,17 +42,33 @@ class DataCollector(Processor):
     
     def __startKafkaConsumer(self):
         print('starting kafka consumer')
+        consumer = KafkaConsumer(self.config['kafka']['topicname'],\
+            bootstrap_servers=[self.config['kafka']['server:port']],\
+            auto_offset_reset='earliest',\
+            group_id='consumer-group-a')
+
+        while True:
+            for msg in consumer:
+                pprint('received ====> {0}'.format(msg.value.decode('utf-8')))
+
 
     def json_serializer(self,data):
         return json.dumps(data).encode('utf-8')
 
+    def json_deserializer(self,data):
+        return json.loads(data).decode('utf-8')
+
     def __startKafkaProducer(self):
         print('starting kafka producer with headlines')
-        producer = KafkaProducer(bootstrap_servers=['172.18.0.3:9092'],value_serializer=self.json_serializer)
-        while 1==1:
-            data = self.__getHeadlines()
+        producer = KafkaProducer(bootstrap_servers=[self.config['kafka']['server:port']]\
+            ,value_serializer=self.json_serializer)
+        data = self.__getHeadlines()
+        
+        while True:
             for x in data:
                 producer.send(self.config['kafka']['topicname'],x)
+                pprint('sent ====> {0}'.format(x))
+                time.sleep(10)
 
     def __getHeadlines(self):
         #return ['test1','test2']

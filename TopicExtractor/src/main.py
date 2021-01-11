@@ -54,17 +54,17 @@ class Process():
                 return
             
             #start preprocessing and insert data into feature store
-            elif self._dataPreProcessor.process(df_articles) == False:
-                print('Preprocessing failed')
-                return
-            elif self._dataAnalyzer.process(df_articles) == False:
-                print('Data analyzer error')
-                return
-            elif self._dataFeatureGenerator.process(df_articles):
-                print('Features genearated. so starting extracting data')
+            # elif self._dataPreProcessor.process(df_articles) == False:
+            #     print('Preprocessing failed')
+            #     return
+            # elif self._dataAnalyzer.process(df_articles) == False:
+            #     print('Data analyzer error')
+            #     return
+            # elif self._dataFeatureGenerator.process(df_articles):
+            #     print('Features genearated. so starting extracting data')
 
             #collect features and prepare model
-            features  = self._dataExtractor.process()
+            #features  = self._dataExtractor.process()
             # if not features:
             #     print('error in data extractor')
             #     return
@@ -75,18 +75,18 @@ class Process():
             #     print('error in data validation')
             #     return
             # else:
-            modelTrainingObj = self._modelTraining.process(features)
-            if not modelTrainingObj:
-                print('error in model training')
-                return
-            model = self._modelEvaluation.process(modelTrainingObj)
-            if not model:
-                print('error in model evaluation ')
-                return
-            elif self._modelValidation.process(model) == False:
-                print('error in model validation')
-                return
-
+            # modelTrainingObj = self._modelTraining.process(features)
+            # if not modelTrainingObj:
+            #     print('error in model training')
+            #     return
+            # model = self._modelEvaluation.process(modelTrainingObj)
+            # if not model:
+            #     print('error in model evaluation ')
+            #     return
+            # elif self._modelValidation.process(model) == False:
+            #     print('error in model validation')
+            #     return
+            input('press any key to stop')
          
         except:
             print(sys.exc_info()[0])
