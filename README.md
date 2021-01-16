@@ -58,7 +58,9 @@ country='us'
 
 # Process:
 first build simple pipelines then extend them with open source tools
-Feature store : This should be common for both Experimental and production pipeline. Take data from NewsAPI and store in postgres. Process it and make features out of it. 
+Feature store : This should be common for both Experimental and production pipeline. THis is to store features of data to server data scientists. Actually here we store data from different datasources and make it available with API. For example customer average spending per year is calculated from customer data and customer transaction data. so we provide and API to extract customer average spending per year value. please note its not cleaned, ready to work with model data, the main purpose is to extract data from centralized location (feature store) with high thoughtput and low latency real time format or offline bulk extract format with API.
+IN our case, we don't use it as we don't have many datasources.
+
 1. Data Extraction : You select and integrate the relevant data from features store sources for the ML task
 3. Data analysis (only in Experiment stage) : EDA
 4. Data validation : handle data schema skew and data value skews
@@ -79,7 +81,9 @@ c. pg_restore -U postgres -d newsdb newsdb_bkup
 Now once db is regstore it will be automatically mapped to our local volume which is configured in postgres image.
 
 setting spark
-create spark container and process preprocessing jobs through spark
+install spark 3.0.1 (python 3.8)... spark 2.4.7 supports only upto python 3.7
+offline preprocessing and online preprocessing
+offline preprocessing : extract data from db and push it to spark
 
 setting kafka container
 set kafka from docker-compose and mention topic "KAFKA_CREATE_TOPICS". in order to test it use below procedure

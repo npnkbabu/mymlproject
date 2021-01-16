@@ -1,5 +1,5 @@
 '''
-Data collector : This class connects NewsAPI and extracts data and store in database
+Data collector : This class connects NewsAPI collects bulk collection of news articles and insert into db
 '''
 
 import os
@@ -18,23 +18,15 @@ class DataCollector(Processor):
     def __init__(self):
         print('DataCollector instatiated')
 
-    def process(self,DataCollectionconfig):
+    def process(self):
         try:
-            self.config = DataCollectionconfig
             self.key = os.getenv('MYMLPROJECT_NEWS_API_KEY')
             if self.key is None:
                 print('Not able to extract news_api key')
                 return
             self.newsapi = NewsApiClient(self.key)
-            #if self.__storeSources():
-            if self.config['EnableOffline']:
+            if self.__storeSources():
                 self.__storeOfflineArticles()
-            if self.config['EnableOnline']:
-                producerThread = threading.Thread(target=self.__startKafkaProducer,daemon=True)
-                producerThread.start()
-                consumerThread = threading.Thread(target=self.__startKafkaConsumer,daemon=True)
-                consumerThread.start()
-            
             return True
         except Exception as ex:
             print('error occured in process : {}'.format(ex))

@@ -2,11 +2,9 @@ import argparse
 import json
 import os
 import sys
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LinearRegression
 
-from FeatureStore.data_collector import DataCollector
-from FeatureStore.data_picker import DataPicker
-from FeatureStore.data_preprocessor import DataPreProcessor
-from FeatureStore.data_feature_generator import DataFeatureGenerator
 from DataAnalysis.data_analysis import DataAnalysis
 from DataExtractor.data_extractor import DataExtractor
 from DataPreparation.data_preparation import DataPreparation
@@ -21,76 +19,53 @@ CONFIG_PATH = os.path.join(BASE_DIR,'config')
 class Process():
     def __init__(self,config):
         print('process started')
-        self.config = config
-        self._dataCollector= DataCollector()
-        self._dataPicker = DataPicker()
-        self._dataPreProcessor = DataPreProcessor()
-        self._dataFeatureGenerator = DataFeatureGenerator()
-        self._dataAnalyzer = DataAnalysis()
 
-        self._dataExtractor = DataExtractor()
-        self._dataPreparation = DataPreparation()
-        self._dataValidation = DataValidation()
+        self.__config = config
 
-        self._modelTraining = ModelTraining()
-        self._modelValidation = ModelValidation()
-        self._modelEvaluation = ModelEvaluation()
+        __dataExtractionConfig = self.__config.get('Data')['Extraction']
+        __dataAnalysisConfig = self.__config.get('Data')['Analysis']
+        __dataValidationConfig = self.__config.get('Data')['Validation']
+        __dataPreparationConfig = self.__config.get('Data')['Preparation']
+
+        self.__dataExtractor = DataExtractor(__dataExtractionConfig)
+        self.__dataAnalyzer = DataAnalysis(__dataAnalysisConfig)   
+        self.__dataValidation = DataValidation(__dataValidationConfig)
+        self.__dataPreparation = DataPreparation(__dataPreparationConfig)
+
+        __modelTrainingConfig = self.__config.get('Model')['Training']
+        __modelEvaluationConfig = self.__config.get('Model')['Evaluation']
+        __modelValidationConfig = self.__config.get('Model')['Validation']
+        self.__modelTraining = ModelTraining(__modelTrainingConfig)
+        self.__modelValidation = ModelValidation(__modelEvaluationConfig)
+        self.__modelEvaluation = ModelEvaluation(__modelValidationConfig)
 
         self.startProcess()
 
     def startProcess(self):
         try:
-            #collect the data from news API ?
-            DataCollectionconfig = self.config.get('Data')['Collection']
-            if DataCollectionconfig.get('Collect'):
-                if self._dataCollector.process(DataCollectionconfig) == False:
-                    print('Not able to get data from newsAPI')
-                    return
+            #pipeline design
+            #datapipeline , modelpipeline
+            self.__dataPipeline = Pipeline(steps=[('dataextraction',self.__dataExtractor),\
+                                                  ('dataanalysis',self.__dataAnalyzer),\
+                                                  ('datavalidation',self.__dataValidation),\
+                                                  ('datapreparation',self.__dataPreparation)])
+
+            self.__modelPipeline = Pipeline(steps=[('modeltraining',self.__modelTraining),\
+                                                   ('modelevaluation',self.__modelEvaluation),\
+                                                   ('modelvalidation',self.__modelValidation)])
+            self.__mainPipeline = Pipeline(steps=[('datapipeline',self.__dataPipeline),\
+                                                  ('modelpipeline',self.__modelPipeline)])
             
-            #get data from database
-            df_articles =  self._dataPicker.process()
-            if df_articles is None:
-                print('Not able to retrieve articles data')
+            #Data extractor is common for both Experiment and Prod
+            if self.__dataExtractor.process() == False:
+                print('Not able to get data from newsAPI')
                 return
-            
-            #start preprocessing and insert data into feature store
-            # elif self._dataPreProcessor.process(df_articles) == False:
-            #     print('Preprocessing failed')
-            #     return
-            # elif self._dataAnalyzer.process(df_articles) == False:
-            #     print('Data analyzer error')
-            #     return
-            # elif self._dataFeatureGenerator.process(df_articles):
-            #     print('Features genearated. so starting extracting data')
-
-            #collect features and prepare model
-            #features  = self._dataExtractor.process()
-            # if not features:
-            #     print('error in data extractor')
-            #     return
-            # if self._dataPreparation.process(features) == False:
-            #     print('error in data preparation')
-            #     return
-            # elif self._dataValidation.process(features) == False:
-            #     print('error in data validation')
-            #     return
-            # else:
-            # modelTrainingObj = self._modelTraining.process(features)
-            # if not modelTrainingObj:
-            #     print('error in model training')
-            #     return
-            # model = self._modelEvaluation.process(modelTrainingObj)
-            # if not model:
-            #     print('error in model evaluation ')
-            #     return
-            # elif self._modelValidation.process(model) == False:
-            #     print('error in model validation')
-            #     return
-            input('press any key to stop')
-         
-        except:
-            print(sys.exc_info()[0])
-
+        
+        except Exception as ex:
+            print(ex)
+        
+        input('press any key to stop')
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -23,22 +23,30 @@ from utils.processor import Processor
 
 class DataAnalysis(Processor):
     
-    def __init__(self):
+    def __init__(self,config=None):
         print('DataAnalysis instantiated')
+        self.__config = config
 
     def process(self,df_articles):
         try:
-            print('EDA by giving word cloud')
-            _wordcloud = WordCloud()
-            tokens = []
-            lst = [[tokens.append(y) for y in x] for x in df_articles['processed_content']]
-            longstring = ','.join(tokens)
-            _wordcloud.generate(longstring)
-            plt.imshow(_wordcloud)
-            plt.axis('off')
-            plt.show()
+            if self.__config['Enable']:
+                print('EDA by giving word cloud')
+                _wordcloud = WordCloud()
+                tokens = []
+                lst = [[tokens.append(y) for y in x] for x in df_articles['processed_content']]
+                longstring = ','.join(tokens)
+                _wordcloud.generate(longstring)
+                plt.imshow(_wordcloud)
+                plt.axis('off')
+                plt.show()
             return True
     
         except:
             print(sys.exc_info())
             return False
+    
+    def fit(self,x,y=None):
+        return self
+
+    def transform(self,x):
+        return self

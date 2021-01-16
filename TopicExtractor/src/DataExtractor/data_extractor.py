@@ -1,42 +1,28 @@
 '''
-Data extractor : Get features data from db file paths
+Data picker : This class extracts data from database and returns collection of articles
+This extraction can be done in 2 ways.
+offline extract : get a bulk collection of articles data
+online extract : return an event for news article. so that it can be subscribed to extract news data
 '''
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import re
-from wordcloud import WordCloud
-import nltk
-from nltk import word_tokenize, sent_tokenize
-from nltk.stem import PorterStemmer, WordNetLemmatizer
-from nltk.corpus import stopwords
-from nltk.corpus import wordnet
-from gensim import corpora, models
-from gensim.models import TfidfModel
-import gensim
 
-from utils.processor import Processor
+import os
+import math
+from datetime import datetime, timedelta
 from utils.database import NewsDatabase
+from utils.processor import Processor
 
 class DataExtractor(Processor):
     
-    def __init__(self):
+    def __init__(self,config=None):
         print('DataExtractor instantiated')
-
-    def process(self):
-        print('Extracting features data in DataExtractor')
-        filepaths = NewsDatabase.GetFeatures()
-        id2word = gensim.corpora.Dictionary.load(filepaths[0])
-        corpus = corpora.MmCorpus(filepaths[1])
-        model = gensim.models.TfidfModel.load(filepaths[2])
-        processeddata = pd.read_csv(filepaths[3])
-        return [id2word,corpus,model,processeddata]
-
-
-        
-
-
-
-
-
+        self.__config = config
     
+    def process(self):
+        print('extracting articles data from database')
+        return NewsDatabase.getArticlesData()
+    
+    def fit(self,x,y=None):
+        return self
+
+    def transform(self,x):
+        return self

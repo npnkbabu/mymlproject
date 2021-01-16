@@ -18,8 +18,9 @@ DATA_PATH = os.path.join(BASE_DIR,'data')
 
 class ModelTraining(Processor):
     
-    def __init__(self):
+    def __init__(self,config=None):
         print('ModelTraining instantiated')
+        self.__config = config
 
     def process(self,features):
         self.id2word, self.gensim_bow, tfidfmodel,self.processeddata = features[0], features[1], features[2], features[3].iloc[:,1]
@@ -64,6 +65,12 @@ class ModelTraining(Processor):
         except:
             print(sys.exc_info())
             return False
+
+    def fit(self,x,y=None):
+        return self
+    def transform(self,x):
+        return self
+
     
         
     

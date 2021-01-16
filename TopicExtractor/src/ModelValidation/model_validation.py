@@ -10,9 +10,15 @@ from utils.processor import Processor
 
 class ModelValidation(Processor):
     
-    def __init__(self):
+    def __init__(self,config):
         print('ModelValidation instantiated')
-
+        self.__config = config
+    
     def process(self,model):
         print('ModelValidation done')
         return model
+
+    def fit(self,x,y=None):
+        return self
+    def transform(self,x):
+        return self

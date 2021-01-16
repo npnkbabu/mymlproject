@@ -1,24 +1,42 @@
 {
-  "Data":
-  {
-    "Collection":
-    {
-      "Collect":true,
-      "EnableOffline":false,
-      "EnableOnline":true,
-      "kafka":
+  "kafka":
       {
         "topicname":"test",
         "server:port":"172.18.0.3:9092"
-      }
+      },
+  "Data":
+  {
+    "Extraction":
+    {
+      "EnableOffline":false,
+      "EnableOnline":true
     },
-    "PreProcessing":
+    "Analysis":
+    {
+      "Enable":false
+    },
+    "Validation":
+    {
+      
+    },
+    "Preparation":
     {
 
     }
   },
   "Model":
   {
+    "Training":
+    {
 
+    },
+    "Evaluation":
+    {
+
+    },
+    "Validation":
+    {
+
+    }
   }
 }

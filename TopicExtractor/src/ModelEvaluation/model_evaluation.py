@@ -20,9 +20,10 @@ DATA_PATH = os.path.join(BASE_DIR,'data')
 
 class ModelEvaluation(Processor):
     
-    def __init__(self):
+    def __init__(self,config=None):
         print('ModelEvaluation instantiated')
-
+        self.__config = config
+    
     def process(self,modelTrainingObj):
         self.__modelTrObj = modelTrainingObj
         print('tunning model')
@@ -111,3 +112,9 @@ class ModelEvaluation(Processor):
                                passes=10,
                                per_word_topics=True)
             return __model
+
+    def fit(self,x,y=None):
+        return self
+    def transform(self,x):
+        return self
+
