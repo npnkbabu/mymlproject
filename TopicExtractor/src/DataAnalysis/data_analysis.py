@@ -19,15 +19,15 @@ nltk.download('averaged_perceptron_tagger')
 import sys
 import os
 
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 
-class DataAnalysis(Processor):
+class DataAnalysis(NewsPipeline):
     
     def __init__(self,config=None):
         print('DataAnalysis instantiated')
         self.__config = config
 
-    def process(self,df_articles):
+    def _process(self,df_articles):
         try:
             if self.__config['Enable']:
                 print('EDA by giving word cloud')
@@ -46,7 +46,9 @@ class DataAnalysis(Processor):
             return False
     
     def fit(self,x,y=None):
+        print('DataAnalysis.fit')
         return self
 
     def transform(self,x):
+        print('DataAnalysis.transform')
         return self

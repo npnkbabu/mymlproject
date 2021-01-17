@@ -16,10 +16,10 @@ from gensim import corpora, models
 from gensim.models import TfidfModel
 import gensim
 
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 from utils.database import NewsDatabase
 
-class DataFetcher(Processor):
+class DataFetcher(NewsPipeline):
     
     def __init__(self,DataCollectionconfig):
         print('DataFetcher instantiated')

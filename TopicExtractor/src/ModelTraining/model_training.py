@@ -11,18 +11,18 @@ import shutil
 from datetime import datetime
 import sys
 
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR,'data')
 
-class ModelTraining(Processor):
+class ModelTraining(NewsPipeline):
     
     def __init__(self,config=None):
         print('ModelTraining instantiated')
         self.__config = config
 
-    def process(self,features):
+    def _process(self,features):
         self.id2word, self.gensim_bow, tfidfmodel,self.processeddata = features[0], features[1], features[2], features[3].iloc[:,1]
         self.corpus_tfidf = tfidfmodel[self.gensim_bow]
         self.__modelfilename = 'topicmodel.pkl'
@@ -67,8 +67,10 @@ class ModelTraining(Processor):
             return False
 
     def fit(self,x,y=None):
+        print('ModelTraining.fit')
         return self
     def transform(self,x):
+        print('ModelTraining.transform')
         return self
 
     

@@ -14,17 +14,17 @@ import shutil
 from datetime import datetime
 import sys
 
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR,'data')
 
-class ModelEvaluation(Processor):
+class ModelEvaluation(NewsPipeline):
     
     def __init__(self,config=None):
         print('ModelEvaluation instantiated')
         self.__config = config
     
-    def process(self,modelTrainingObj):
+    def _process(self,modelTrainingObj):
         self.__modelTrObj = modelTrainingObj
         print('tunning model')
         return self.__hyperparamtunning()
@@ -114,7 +114,9 @@ class ModelEvaluation(Processor):
             return __model
 
     def fit(self,x,y=None):
+        print('ModelEvaluation.fit')
         return self
     def transform(self,x):
+        print('ModelEvaluation.transform')
         return self
 

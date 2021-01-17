@@ -9,20 +9,22 @@ import os
 import math
 from datetime import datetime, timedelta
 from utils.database import NewsDatabase
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 
-class DataExtractor(Processor):
+class DataExtractor(NewsPipeline):
     
     def __init__(self,config=None):
         print('DataExtractor instantiated')
         self.__config = config
     
-    def process(self):
+    def _process(self):
         print('extracting articles data from database')
         return NewsDatabase.getArticlesData()
     
     def fit(self,x,y=None):
+        print('DataExtractor.fit')
         return self
 
     def transform(self,x):
+        print('DataExtractor.transform')
         return self

@@ -25,13 +25,13 @@ import os
 import shutil
 import json
 from datetime import datetime
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 from utils.database import NewsDatabase
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR,'data')
 
-class DataFeatureGenerator(Processor):
+class DataFeatureGenerator(NewsPipeline):
     
     def __init__(self):
         print('DataFeatureGenerator instantiated')

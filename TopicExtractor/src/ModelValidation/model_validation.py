@@ -6,19 +6,21 @@ import pandas as pd
 import numpy as np
 
 
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 
-class ModelValidation(Processor):
+class ModelValidation(NewsPipeline):
     
     def __init__(self,config):
         print('ModelValidation instantiated')
         self.__config = config
     
-    def process(self,model):
+    def _process(self,model):
         print('ModelValidation done')
         return model
 
     def fit(self,x,y=None):
+        print('ModelValidation.fit')
         return self
     def transform(self,x):
+        print('ModelValidation.transform')
         return self

@@ -7,14 +7,14 @@ import math
 from newsapi import NewsApiClient
 from datetime import datetime, timedelta
 from utils.database import NewsDatabase
-from utils.processor import Processor
+from utils.newspipeline import NewsPipeline
 import threading
 from kafka import KafkaProducer, KafkaConsumer
 import json
 import time
 from pprint import pprint
 
-class DataCollector(Processor):
+class DataCollector(NewsPipeline):
     def __init__(self):
         print('DataCollector instatiated')
 

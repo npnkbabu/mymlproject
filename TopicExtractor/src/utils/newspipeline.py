@@ -1,11 +1,13 @@
 from sklearn.base import BaseEstimator, TransformerMixin
+from abc import abstractmethod
 
-class Processor(BaseEstimator,TransformerMixin):
+class NewsPipeline(BaseEstimator,TransformerMixin):
 
     def __init__(self,config=None):
         super.__init__()
-
-    def process(self,data=None):
+    
+    @abstractmethod
+    def _process(self,data=None):
         pass
 
     def fit(self,x,y=None):

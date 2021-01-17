@@ -57,9 +57,7 @@ class Process():
                                                   ('modelpipeline',self.__modelPipeline)])
             
             #Data extractor is common for both Experiment and Prod
-            if self.__dataExtractor.process() == False:
-                print('Not able to get data from newsAPI')
-                return
+            self.__mainPipeline.fit_transform(1)
         
         except Exception as ex:
             print(ex)
