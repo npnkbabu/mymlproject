@@ -1,7 +1,7 @@
 '''
 Data extractor : Get features data from db file paths
 '''
-from DataExtractor.data_collector import DataCollector
+from src.data_collector import DataCollector
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

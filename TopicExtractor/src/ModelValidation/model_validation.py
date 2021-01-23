@@ -5,16 +5,16 @@ Similar to data we do validate the model in production pipeline with new data an
 import pandas as pd
 import numpy as np
 
-
 from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 class ModelValidation(NewsPipeline):
     
-    def __init__(self,config):
+    def __init__(self):
         print('ModelValidation instantiated')
-        self.__config = config
     
     def _process(self,model):
+        self.__config = PipelineConfig.getPipelineConfig(self)
         print('ModelValidation done')
         return model
 
@@ -23,4 +23,4 @@ class ModelValidation(NewsPipeline):
         return self
     def transform(self,x):
         print('ModelValidation.transform')
-        return self
+        return self._process(x)

@@ -25,21 +25,20 @@ import os
 import shutil
 import json
 from datetime import datetime
-from utils.newspipeline import NewsPipeline
 from utils.database import NewsDatabase
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR,'data')
 
-class DataFeatureGenerator(NewsPipeline):
+class DataFeatureGenerator():
     
-    def __init__(self):
+    def __init__(self,config):
         print('DataFeatureGenerator instantiated')
+        self.__config = config
 
     def process(self,df_articles):
         try:
-            print('Generating features')
-                     
+            print('Generating features')     
             id2word = gensim.corpora.Dictionary(df_articles['processed_content'])
             count=0
             for key, val in id2word.iteritems():
@@ -57,7 +56,9 @@ class DataFeatureGenerator(NewsPipeline):
             corpus_tfidf = model[corpus]
             for doc in corpus_tfidf[:10]:
                 print(doc)
-            return self.__storeFeatures(id2word,corpus,model,processeddata)
+            if self.__config['Store']:
+                self.__storeFeatures(id2word,corpus,model,processeddata)
+            return [id2word,corpus,model,processeddata]
         except:
             print(sys.exc_info())
             return None
@@ -68,13 +69,24 @@ class DataFeatureGenerator(NewsPipeline):
             #saving features into files
             today = datetime.today().strftime('%Y-%m-%d')
             filepath = os.path.join(DATA_PATH, today)
-            if os.path.exists(filepath):
-                shutil.rmtree(filepath)
-            os.mkdir(filepath)
+            if not os.path.exists(filepath):
+                os.mkdir(filepath)
+
             strid2wordfile = os.path.join(filepath,'id2word.dic')
+            if os.path.isfile(strid2wordfile):
+                os.remove(strid2wordfile)
+            
             strcorpusfile =  os.path.join(filepath,'corpus.mm')
+            if os.path.isfile(strcorpusfile):
+                os.remove(strcorpusfile)
+
             strmodelfile = os.path.join(filepath,'tfidfmodel.model')
+            if os.path.isfile(strmodelfile):
+                os.remove(strmodelfile)
+            
             processeddatafile = os.path.join(filepath,'processeddata.csv')
+            if os.path.isfile(processeddatafile):
+                os.remove(processeddatafile)
 
             id2word.save(strid2wordfile)
             corpora.MmCorpus.serialize(strcorpusfile,corpus)

@@ -8,16 +8,17 @@ online extract : return an event for news article. so that it can be subscribed 
 import os
 import math
 from datetime import datetime, timedelta
-from utils.database import NewsDatabase
-from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.database import NewsDatabase
+from TopicExtractor.src.utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 class DataExtractor(NewsPipeline):
     
-    def __init__(self,config=None):
+    def __init__(self):
         print('DataExtractor instantiated')
-        self.__config = config
-    
+        
     def _process(self):
+        self.__config = PipelineConfig.getPipelineConfig(self)
         print('extracting articles data from database')
         return NewsDatabase.getArticlesData()
     
@@ -27,4 +28,4 @@ class DataExtractor(NewsPipeline):
 
     def transform(self,x):
         print('DataExtractor.transform')
-        return self
+        return self._process()

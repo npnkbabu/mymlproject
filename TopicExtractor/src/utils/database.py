@@ -3,6 +3,10 @@ import os
 import json
 import pandas as pd
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+CONFIG_PATH = os.path.join(BASE_DIR,'config')
+CONFIG_FILE = 'database.json'
+
 class NewsDatabase():
     
     def __init__(self):
@@ -10,12 +14,16 @@ class NewsDatabase():
 
     @staticmethod
     def getConnection():
+        with open(os.path.join(CONFIG_PATH,CONFIG_FILE), 'r') as file:
+            config = json.load(file)
+        
         return psycopg2.connect(
-                                        user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
-                                        password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
-                                        host = '172.19.0.2',
-                                        port = '5432',
-                                        database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE'))
+                                user = os.getenv('MYMLPROJECT_NEWSDB_USER'),
+                                password = os.getenv('MYMLPROJECT_NEWSDB_PASSWORD'),
+                                host = config['host'],
+                                port = config['port'],
+                                database = os.getenv('MYMLPROJECT_NEWSDB_DATABASE')
+                                )
     
 
     @staticmethod

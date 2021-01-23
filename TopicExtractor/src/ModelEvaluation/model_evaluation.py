@@ -15,20 +15,40 @@ from datetime import datetime
 import sys
 
 from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR,'data')
 
 class ModelEvaluation(NewsPipeline):
     
-    def __init__(self,config=None):
+    def __init__(self):
         print('ModelEvaluation instantiated')
-        self.__config = config
+        self.__modelfilename = 'topicmodel.pkl'
     
     def _process(self,modelTrainingObj):
+        self.__config = PipelineConfig.getPipelineConfig(self)
         self.__modelTrObj = modelTrainingObj
         print('tunning model')
-        return self.__hyperparamtunning()
+        self.__model = self.__hyperparamtunning()
+        if self.__config['Store']:
+            self.__savemodel()
+        return self.__model
 
+    def __savemodel(self):
+        print('storing topic model')
+        try:
+            today = datetime.today().strftime('%Y-%m-%d')
+            topicmodelfile = os.path.join(DATA_PATH, today,self.__modelfilename)
+            if os.path.isfile(topicmodelfile):
+                os.remove(topicmodelfile)
+            with open(topicmodelfile,'wb') as plkfile:
+                pickle.dump(self.__model,plkfile)
+            return True
+        except:
+            print(sys.exc_info())
+            return False
+    
     def __getcoh(self,corpus, dictionary, k, a, b):
         __model = LdaMulticore(corpus=corpus, 
                                id2word=dictionary,
@@ -118,5 +138,5 @@ class ModelEvaluation(NewsPipeline):
         return self
     def transform(self,x):
         print('ModelEvaluation.transform')
-        return self
+        return self._process(x)
 

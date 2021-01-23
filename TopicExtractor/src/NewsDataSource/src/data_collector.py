@@ -6,27 +6,31 @@ import os
 import math
 from newsapi import NewsApiClient
 from datetime import datetime, timedelta
-from utils.database import NewsDatabase
-from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.database import NewsDatabase
 import threading
 from kafka import KafkaProducer, KafkaConsumer
 import json
 import time
 from pprint import pprint
 
-class DataCollector(NewsPipeline):
-    def __init__(self):
+class DataCollector():
+    def __init__(self,config):
         print('DataCollector instatiated')
+        self.__config = config
+        self.__process()
 
-    def process(self):
+    def __process(self):
         try:
             self.key = os.getenv('MYMLPROJECT_NEWS_API_KEY')
             if self.key is None:
                 print('Not able to extract news_api key')
                 return
             self.newsapi = NewsApiClient(self.key)
-            if self.__storeSources():
+            #if self.__storeSources():
+            if self.__config['Offline']:
                 self.__storeOfflineArticles()
+            if self.__config['Online']:
+                self.__startKafkaProducer()
             return True
         except Exception as ex:
             print('error occured in process : {}'.format(ex))
@@ -34,15 +38,14 @@ class DataCollector(NewsPipeline):
     
     def __startKafkaConsumer(self):
         print('starting kafka consumer')
-        consumer = KafkaConsumer(self.config['kafka']['topicname'],\
-            bootstrap_servers=[self.config['kafka']['server:port']],\
+        consumer = KafkaConsumer(self.__config['kafka']['topicname'],\
+            bootstrap_servers=[self.__config['kafka']['server:port']],\
             auto_offset_reset='earliest',\
             group_id='consumer-group-a')
 
         while True:
             for msg in consumer:
                 pprint('received ====> {0}'.format(msg.value.decode('utf-8')))
-
 
     def json_serializer(self,data):
         return json.dumps(data).encode('utf-8')
@@ -52,18 +55,17 @@ class DataCollector(NewsPipeline):
 
     def __startKafkaProducer(self):
         print('starting kafka producer with headlines')
-        producer = KafkaProducer(bootstrap_servers=[self.config['kafka']['server:port']]\
+        producer = KafkaProducer(bootstrap_servers=[self.__config['kafka']['server:port']]\
             ,value_serializer=self.json_serializer)
         data = self.__getHeadlines()
         
         while True:
             for x in data:
-                producer.send(self.config['kafka']['topicname'],x)
+                producer.send(self.__config['kafka']['topicname'],x)
                 pprint('sent ====> {0}'.format(x))
                 time.sleep(10)
 
     def __getHeadlines(self):
-        #return ['test1','test2']
         response = self.newsapi.get_top_headlines(sources='abc-news',language='en')
         if response['status'] == 'ok':
             return response['articles']

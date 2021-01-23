@@ -20,15 +20,16 @@ import sys
 import os
 
 from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 class DataAnalysis(NewsPipeline):
     
-    def __init__(self,config=None):
+    def __init__(self):
         print('DataAnalysis instantiated')
-        self.__config = config
 
     def _process(self,df_articles):
         try:
+            self.__config = PipelineConfig.getPipelineConfig(self)
             if self.__config['Enable']:
                 print('EDA by giving word cloud')
                 _wordcloud = WordCloud()
@@ -39,7 +40,7 @@ class DataAnalysis(NewsPipeline):
                 plt.imshow(_wordcloud)
                 plt.axis('off')
                 plt.show()
-            return True
+            return df_articles
     
         except:
             print(sys.exc_info())
@@ -51,4 +52,4 @@ class DataAnalysis(NewsPipeline):
 
     def transform(self,x):
         print('DataAnalysis.transform')
-        return self
+        return self._process(x)

@@ -5,14 +5,15 @@ import numpy as np
 import pandas as pd
 
 from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 class DataValidation(NewsPipeline):
 
-    def __init__(self,config=None):
+    def __init__(self):
         print('DataValidation instantiated')
-        self.__config = config
 
     def _process(self,data):
+        self.__config = PipelineConfig.getPipelineConfig(self)
         return True
 
     def fit(self,x,y=None):
@@ -21,4 +22,4 @@ class DataValidation(NewsPipeline):
 
     def transform(self,x):
         print('DataValidation.transform')
-        return self
+        return x

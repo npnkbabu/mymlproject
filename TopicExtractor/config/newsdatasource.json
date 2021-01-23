@@ -1,0 +1,13 @@
+{
+    "Collection":
+        {
+            "Offline":true,
+            "Online":false,
+            "kafka":
+                {
+                    "topicname":"test",
+                    "server:port":"172.18.0.3:9092"
+                }
+        }
+    
+}

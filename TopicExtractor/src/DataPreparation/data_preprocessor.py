@@ -21,11 +21,11 @@ nltk.download('averaged_perceptron_tagger')
 import sys
 import os
 
-
-class DataPreProcessor:
+class DataPreProcessor():
     
-    def __init__(self):
+    def __init__(self,config):
         print('DataPreProcessor instantiated ')
+        self.__config = config
     
     def process(self,data):
         try:
@@ -38,7 +38,7 @@ class DataPreProcessor:
             self.__wordnetLemmatizer = WordNetLemmatizer()
             self.__stemmer = PorterStemmer()
             self.df_articles['processed_content'] = self.df_articles['content'].map(self.__preprocess)
-            return True
+            return self.df_articles
         except:
             print(sys.exc_info()[0])
         finally:

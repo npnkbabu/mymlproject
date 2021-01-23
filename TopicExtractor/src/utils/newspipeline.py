@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 class NewsPipeline(BaseEstimator,TransformerMixin):
 
-    def __init__(self,config=None):
+    def __init__(self):
         super.__init__()
     
     @abstractmethod
