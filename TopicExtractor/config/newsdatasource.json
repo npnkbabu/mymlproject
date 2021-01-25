@@ -1,8 +1,8 @@
 {
     "Collection":
         {
-            "Offline":true,
-            "Online":false,
+            "Offline":false,
+            "Online":true,
             "kafka":
                 {
                     "topicname":"test",

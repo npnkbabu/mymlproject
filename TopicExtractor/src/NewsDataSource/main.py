@@ -1,5 +1,9 @@
-from src.data_collector import DataCollector
+import sys
 import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
+from src.data_collector import DataCollector
+
 import argparse
 import json
 
@@ -19,4 +23,6 @@ if __name__ == '__main__':
         with open(os.path.join(CONFIG_PATH,CONFIG_FILE), 'r') as file:
             __config = json.load(file)
     __dataFetchConfig = __config.get('Collection')
+
     obj = DataCollector(__dataFetchConfig)
+    input('print key to exit')

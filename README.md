@@ -8,6 +8,9 @@ Its operated in 2 ways
 offline : extract news data and store in postgress db
 online : start kafka producer
 
+SampleFlaskApp:
+its webUI where kafka consumers listens for data and show topics out of that. We start NewsDataSource with online True, so that its kafka producer starts getting data from news API and broadcasts.
+
  pipeline
 1. Feature store : its optional comp to store features so that multiple ML projects can query and get
 2. Data extractor : This has 2 modes offline (get data from DB) , online (start kafka consumer)

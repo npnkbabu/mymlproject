@@ -55,7 +55,7 @@ class Process():
             
             #self.__mainPipeline.fit(1)
             #self.__storeDatapipeline()
-            self.__predictSample()
+            #self.__predictSample()
 
         
         except Exception as ex:

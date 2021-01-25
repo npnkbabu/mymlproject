@@ -17,6 +17,8 @@ class DataCollector():
     def __init__(self,config):
         print('DataCollector instatiated')
         self.__config = config
+        self.thrd = threading.Thread(target=self.__startKafkaProducer)
+        self.thrd.daemon=True
         self.__process()
 
     def __process(self):
@@ -30,7 +32,7 @@ class DataCollector():
             if self.__config['Offline']:
                 self.__storeOfflineArticles()
             if self.__config['Online']:
-                self.__startKafkaProducer()
+                self.thrd.start()
             return True
         except Exception as ex:
             print('error occured in process : {}'.format(ex))
@@ -57,9 +59,9 @@ class DataCollector():
         print('starting kafka producer with headlines')
         producer = KafkaProducer(bootstrap_servers=[self.__config['kafka']['server:port']]\
             ,value_serializer=self.json_serializer)
-        data = self.__getHeadlines()
         
         while True:
+            data = self.__getHeadlines()
             for x in data:
                 producer.send(self.__config['kafka']['topicname'],x)
                 pprint('sent ====> {0}'.format(x))

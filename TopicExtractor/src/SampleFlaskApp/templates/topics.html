@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{{ super() }}
+{% block content %}
+
+<table width = "100%" border = "0">
+         
+    <tr>
+       <td colspan = "2" bgcolor = "#b5dcb3">
+          <h1>News Topics</h1>
+       </td>
+    </tr>
+
+    <tr valign = "top">
+        <td bgcolor = "#eee" width = "100" height = "200">
+            <h2>News And Topics</h2>
+            <iframe frameborder="0" noresize="noresize"
+            style='background: transparent; width: 100%; height:100%;' src="{{ url_for('newsandtopics')}}"></iframe>
+         </td>
+       
+       <td bgcolor = "#eee" width = "100" height = "200">
+            <h2>Stats</h2>
+       </td>
+    </tr>
+    <tr>
+        <td colspan = "2" bgcolor = "#b5dcb3">
+          <div>
+            <button type="button">Start</button>
+            <button type="button">Stop</button>
+          </div>
+        </td>
+     </tr>
+     <tr>
+        <td colspan = "2" bgcolor = "#eee" height = "200">
+          <div>
+            
+          </div>
+        </td>
+     </tr>
+
+</table>
+
+{% endblock %}
