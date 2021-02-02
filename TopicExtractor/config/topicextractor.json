@@ -1,37 +1,30 @@
 {
-  "Data":
-  {
-    "Extraction":
-    {
-      "EnableOffline":true,
-      "EnableOnline":false
+  "Pipeline": {
+    "Data": {
+      "Extraction": {
+        "EnableOffline": false,
+        "EnableOnline": false,
+        "StoreData": true
+      },
+      "Analysis": {
+        "Enable": true
+      },
+      "Validation": {},
+      "Preparation": {
+        "Storefeatures": true,
+        "Storepipeline":true
+      }
     },
-    "Analysis":
-    {
-      "Enable":false
-    },
-    "Validation":
-    {
-      
-    },
-    "Preparation":
-    {
-      "Store":false
-    }
-  },
-  "Model":
-  {
-    "Training":
-    {
-
-    },
-    "Evaluation":
-    {
-      "Store":true
-    },
-    "Validation":
-    {
-
+    "Model": {
+      "Training": {
+        "Storemodel": true
+      },
+      "Evaluation": {
+        "Storemodel": true
+      },
+      "Validation": {
+        "Storemodel": true
+      }
     }
   }
 }

@@ -1,17 +1,22 @@
 # MyMLProject
 Docker : 
-first start docker for postgress, kafka
+1. first start docker for postgress, kafka
 
 NewsDataSource:
 This project is to extract news data from API.
 Its operated in 2 ways
 offline : extract news data and store in postgress db
 online : start kafka producer
+1. check database.json and configure postgress db details as per docker
+2. check newsdatasource.json and configure kakfa details as per docker
 
 SampleFlaskApp:
 its webUI where kafka consumers listens for data and show topics out of that. We start NewsDataSource with online True, so that its kafka producer starts getting data from news API and broadcasts.
 
- pipeline
+
+
+TopicExtrator
+its a pipeline used to build the model and featureextractor pkl files 
 1. Feature store : its optional comp to store features so that multiple ML projects can query and get
 2. Data extractor : This has 2 modes offline (get data from DB) , online (start kafka consumer)
 3. Data analysis (only in Experiment stage)
@@ -20,6 +25,9 @@ its webUI where kafka consumers listens for data and show topics out of that. We
 6. model training
 7. model evaluation
 8. model validation
+
+Components of TopicExtractor
+1. Metadata store : we are using mlflow to store all parameters, metrics and artifacts
 
 # NewsAPI
 url : https://newsapi.org/docs/get-started

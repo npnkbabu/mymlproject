@@ -10,17 +10,37 @@ import math
 from datetime import datetime, timedelta
 from TopicExtractor.src.utils.database import NewsDatabase
 from TopicExtractor.src.utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+DATA_PATH = os.path.join(BASE_DIR,'data')
 
 class DataExtractor(NewsPipeline):
     
     def __init__(self):
         print('DataExtractor instantiated')
+        self.__articlesDataFileName = 'Articles.csv'
+        super().__init__()
         
+        
+    @mlflowtimed
     def _process(self):
         self.__config = PipelineConfig.getPipelineConfig(self)
         print('extracting articles data from database')
-        return NewsDatabase.getArticlesData()
+        data = NewsDatabase.getArticlesData()
+
+        #store number of articles and articles data also
+        self._addMLflowParam('ArticlesCount',data.shape[0])
+        if self.__config['StoreData']:
+            today = datetime.today().strftime('%Y-%m-%d')
+            filepath = os.path.join(DATA_PATH, today,self.__articlesDataFileName)
+            data.to_csv(filepath)
+            self._addMLflowArtifact(filepath)
+        
+        #last step to store metadata
+        self._storeMLflowData()
+        return data
     
     def fit(self,x,y=None):
         print('DataExtractor.fit')

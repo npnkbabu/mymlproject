@@ -52,7 +52,7 @@ class DataPreProcessor():
         line = re.sub(r'[0-9!”#$%&’()*+,-./:;<=>?@[\]^_`{|}~]','',line)
         line = line.strip()
         tokens = word_tokenize(line)
-        tokens = [x for x in tokens if len(x)>2]
+        tokens = [x for x in tokens ]
         tokens = list(map(lambda x : x.lower(),tokens))
         tokens = [x for x in tokens if x not in self.__stop_words]
         tokens = list(map(lambda x : self.__stemmer.stem(x),tokens))

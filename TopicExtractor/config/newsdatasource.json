@@ -1,13 +1,20 @@
 {
     "Collection":
         {
+            "store_sources":false,
             "Offline":false,
-            "Online":true,
-            "kafka":
+            "Online":
+            {
+                "headlines_enable":true,
+                "headlines_kafka":
                 {
-                    "topicname":"test",
+                    "topicname":"newstopic",
                     "server:port":"172.18.0.3:9092"
-                }
+                },
+                "headlines_interval":60
+            },
+            "news_source":"abc-news",
+            "language":"en"
         }
     
 }

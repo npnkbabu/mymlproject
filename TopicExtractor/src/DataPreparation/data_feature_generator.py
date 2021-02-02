@@ -35,6 +35,7 @@ class DataFeatureGenerator():
     def __init__(self,config):
         print('DataFeatureGenerator instantiated')
         self.__config = config
+        self.artifactsList = []
 
     def process(self,df_articles):
         try:
@@ -56,7 +57,7 @@ class DataFeatureGenerator():
             corpus_tfidf = model[corpus]
             for doc in corpus_tfidf[:10]:
                 print(doc)
-            if self.__config['Store']:
+            if self.__config['Storefeatures']:
                 self.__storeFeatures(id2word,corpus,model,processeddata)
             return [id2word,corpus,model,processeddata]
         except:
@@ -92,6 +93,11 @@ class DataFeatureGenerator():
             corpora.MmCorpus.serialize(strcorpusfile,corpus)
             model.save(strmodelfile)
             processeddata.to_csv(processeddatafile)
+
+            self.artifactsList.append(strid2wordfile)
+            self.artifactsList.append(strcorpusfile)
+            self.artifactsList.append(strmodelfile)
+            self.artifactsList.append(processeddatafile)
             NewsDatabase.dumpFeatures([strid2wordfile,strcorpusfile,strmodelfile,processeddatafile])
             return True
         except:

@@ -16,6 +16,8 @@ from DataValidation.data_validation import DataValidation
 from ModelTraining.model_training import ModelTraining
 from ModelEvaluation.model_evaluation import ModelEvaluation
 from ModelValidation.model_validation import ModelValidation
+from utils.pipelineconfig import PipelineConfig
+import mlflow
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR,'config')
@@ -39,45 +41,29 @@ class Process():
     
     def startProcess(self):
         try:
-            self.__dataPrePipeline = Pipeline(steps=[('dataextraction',self.__dataExtractor),\
-                                                  ('dataanalysis',self.__dataAnalyzer)])
-                                                
-            self.__dataPipeline = Pipeline(steps=[('datavalidation',self.__dataValidation),\
-                                                  ('datapreparation',self.__dataPreparation)])
-
+            #data pipeline
+            self.__dataPipeline = Pipeline(steps=[('dataextraction',self.__dataExtractor),\
+                                                  ('dataanalysis',self.__dataAnalyzer),\
+                                                  ('datavalidation',self.__dataValidation),\
+                                                  ('datapreparation',self.__dataPreparation)\
+                                                  ])
+            #model pipeline
             self.__modelPipeline = Pipeline(steps=[('modeltraining',self.__modelTraining),\
                                                    ('modelevaluation',self.__modelEvaluation),\
-                                                   ('modelvalidation',self.__modelValidation)])
-            
-            self.__mainPipeline = Pipeline(steps=[('dataprepipeline',self.__dataPrePipeline),\
-                                                  ('datapipeline',self.__dataPipeline),\
+                                                   ('modelvalidation',self.__modelValidation)\
+                                                  ])
+            #main pipeline
+            self.__mainPipeline = Pipeline(steps=[('datapipeline',self.__dataPipeline),\
                                                   ('modelpipeline',self.__modelPipeline)])
             
-            #self.__mainPipeline.fit(1)
-            #self.__storeDatapipeline()
-            #self.__predictSample()
+            #below step is to run pipeline
+            self.__mainPipeline.fit_transform(1)
 
         
         except Exception as ex:
             print(ex)
         
-        input('press any key to stop')
- 
 
-    def __storeDatapipeline(self):
-        print('storing data pipeline')
-        try:
-            today = datetime.today().strftime('%Y-%m-%d')
-            dataPipelineFile = os.path.join(DATA_PATH, today,'dataPipeline.pkl')
-            if os.path.isfile(dataPipelineFile):
-                os.remove(dataPipelineFile)
-            with open(dataPipelineFile,'wb') as plkfile:
-                pickle.dump(self.__dataPipeline,plkfile)
-            return True
-        except:
-            print(sys.exc_info())
-            return False
-    
     def __predictSample(self):
         try:
             today = datetime.today().strftime('%Y-%m-%d')
@@ -104,12 +90,11 @@ class Process():
     
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', dest='config',
-                      help='Absolute path to configuration file.')
-    args = parser.parse_args()
-    if not args.config:
-        print('no config file')
-        exit()
-    else:
+
+    runname = 'TopicExtractor'
+    expID=0
+    with mlflow.start_run(run_name=runname,experiment_id=expID) as exp:
         obj = Process()
+    
+    input('press any key to stop')
+    

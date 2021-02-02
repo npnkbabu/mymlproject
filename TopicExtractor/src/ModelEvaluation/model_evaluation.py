@@ -15,6 +15,7 @@ from datetime import datetime
 import sys
 
 from utils.newspipeline import NewsPipeline
+from TopicExtractor.src.utils.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -23,32 +24,23 @@ DATA_PATH = os.path.join(BASE_DIR,'data')
 class ModelEvaluation(NewsPipeline):
     
     def __init__(self):
+        super().__init__()
+        self.__modelfilename = 'EvaluatedModel.pkl'
         print('ModelEvaluation instantiated')
-        self.__modelfilename = 'topicmodel.pkl'
     
-    def _process(self,modelTrainingObj):
+    @mlflowtimed
+    def _process(self,features):
         self.__config = PipelineConfig.getPipelineConfig(self)
-        self.__modelTrObj = modelTrainingObj
+        self.id2word, self.gensim_bow, self.tfidfmodel,self.processeddata = features[0], features[1], features[2], features[3]
+        self.corpus_tfidf = self.tfidfmodel[self.gensim_bow]
         print('tunning model')
         self.__model = self.__hyperparamtunning()
-        if self.__config['Store']:
+        if self.__config['Storemodel']:
             self.__savemodel()
+        
+        self._storeMLflowData()
         return self.__model
-
-    def __savemodel(self):
-        print('storing topic model')
-        try:
-            today = datetime.today().strftime('%Y-%m-%d')
-            topicmodelfile = os.path.join(DATA_PATH, today,self.__modelfilename)
-            if os.path.isfile(topicmodelfile):
-                os.remove(topicmodelfile)
-            with open(topicmodelfile,'wb') as plkfile:
-                pickle.dump(self.__model,plkfile)
-            return True
-        except:
-            print(sys.exc_info())
-            return False
-    
+   
     def __getcoh(self,corpus, dictionary, k, a, b):
         __model = LdaMulticore(corpus=corpus, 
                                id2word=dictionary,
@@ -68,10 +60,6 @@ class ModelEvaluation(NewsPipeline):
     def __hyperparamtunning(self):
         print('hyper param tuning')
 
-        # topics_range = list(np.arange(2,10,1))
-        # alpha_range = list(np.arange(0.01,1,0.3))
-        # beta_range = list(np.arange(0.01,1,0.3))
-
         topics_range = list(np.arange(9,10,1))
         alpha_range = list(np.arange(0.1,0.5,0.3))
         beta_range = list(np.arange(0.1,0.5,0.3))
@@ -79,8 +67,8 @@ class ModelEvaluation(NewsPipeline):
         alpha_range.extend(['asymmetric'])
         beta_range.extend(['symmetric'])
         
-        noofdocs = len(self.__modelTrObj.processeddata)
-        corpus = self.__modelTrObj.corpus_tfidf
+        noofdocs = len(self.processeddata)
+        corpus = self.corpus_tfidf
         print('no of docs : ',noofdocs)
         print('dividing corpus  0.25, 0.5, 0.75, 1 shares for testing ')
         corpus_sets = [#gensim.utils.ClippedCorpus(corpus,noofdocs* 0.25),
@@ -100,7 +88,7 @@ class ModelEvaluation(NewsPipeline):
                 for k in topics_range:
                     for a in alpha_range:
                         for b in beta_range:
-                            cv = self.__getcoh(corpus_sets[i],self.__modelTrObj.id2word,k,a,b)
+                            cv = self.__getcoh(corpus_sets[i],self.id2word,k,a,b)
                             model_results['Validation_Set'].append(corpus_title[i])
                             model_results['Topics'].append(k)
                             model_results['Alpha'].append(a)
@@ -122,7 +110,7 @@ class ModelEvaluation(NewsPipeline):
             pbar.close()
             goodvals = results.loc[results['Coherence'].idxmax()]
             __model = LdaMulticore(corpus=corpus, 
-                               id2word=self.__modelTrObj.id2word,
+                               id2word=self.id2word,
                                num_topics=goodvals['Topics'],
                                alpha=goodvals['Alpha'],
                                eta=goodvals['Beta'],
@@ -131,6 +119,11 @@ class ModelEvaluation(NewsPipeline):
                                chunksize=100,
                                passes=10,
                                per_word_topics=True)
+            
+            self._addMLflowMetric('num_topics',goodvals['Topics'])
+            self._addMLflowMetric('alpha',goodvals['Alpha'])
+            self._addMLflowMetric('eta',goodvals['Beta'])
+
             return __model
 
     def fit(self,x,y=None):
@@ -139,4 +132,20 @@ class ModelEvaluation(NewsPipeline):
     def transform(self,x):
         print('ModelEvaluation.transform')
         return self._process(x)
+
+    def __savemodel(self):
+        print('storing topic model')
+        try:
+            today = datetime.today().strftime('%Y-%m-%d')
+            topicmodelfile = os.path.join(DATA_PATH, today,self.__modelfilename)
+            if os.path.isfile(topicmodelfile):
+                os.remove(topicmodelfile)
+            with open(topicmodelfile,'wb') as plkfile:
+                pickle.dump(self.__model,plkfile)
+            
+            self._addMLflowArtifact(topicmodelfile)
+            return True
+        except Exception as ex:
+            print(ex)
+            return False
 

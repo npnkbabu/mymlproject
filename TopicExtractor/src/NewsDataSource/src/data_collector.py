@@ -28,10 +28,11 @@ class DataCollector():
                 print('Not able to extract news_api key')
                 return
             self.newsapi = NewsApiClient(self.key)
-            #if self.__storeSources():
+            if self.__config['store_sources']:
+                self.__storeSources()
             if self.__config['Offline']:
                 self.__storeOfflineArticles()
-            if self.__config['Online']:
+            if self.__config['Online']['headlines_enable']:
                 self.thrd.start()
             return True
         except Exception as ex:
@@ -57,18 +58,18 @@ class DataCollector():
 
     def __startKafkaProducer(self):
         print('starting kafka producer with headlines')
-        producer = KafkaProducer(bootstrap_servers=[self.__config['kafka']['server:port']]\
+        producer = KafkaProducer(bootstrap_servers=[self.__config['Online']['headlines_kafka']['server:port']]\
             ,value_serializer=self.json_serializer)
         
         while True:
             data = self.__getHeadlines()
             for x in data:
-                producer.send(self.__config['kafka']['topicname'],x)
+                producer.send(self.__config['Online']['headlines_kafka']['topicname'],x)
                 pprint('sent ====> {0}'.format(x))
-                time.sleep(10)
+                time.sleep(self.__config['Online']['headlines_interval'])
 
     def __getHeadlines(self):
-        response = self.newsapi.get_top_headlines(sources='abc-news',language='en')
+        response = self.newsapi.get_top_headlines(sources=self.__config['news_source'],language=self.__config['language'])
         if response['status'] == 'ok':
             return response['articles']
     
