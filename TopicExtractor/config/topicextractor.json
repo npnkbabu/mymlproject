@@ -2,8 +2,6 @@
   "Pipeline": {
     "Data": {
       "Extraction": {
-        "EnableOffline": false,
-        "EnableOnline": false,
         "StoreData": true
       },
       "Analysis": {

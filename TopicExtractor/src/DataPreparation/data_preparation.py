@@ -11,7 +11,7 @@ import pickle
 from utils.newspipeline import NewsPipeline
 from DataPreparation.data_preprocessor import DataPreProcessor
 from DataPreparation.data_feature_generator import DataFeatureGenerator
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))

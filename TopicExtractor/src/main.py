@@ -57,7 +57,10 @@ class Process():
                                                   ('modelpipeline',self.__modelPipeline)])
             
             #below step is to run pipeline
-            self.__mainPipeline.fit_transform(1)
+            _finalModel = self.__mainPipeline.fit_transform(1)
+
+            
+
 
         
         except Exception as ex:

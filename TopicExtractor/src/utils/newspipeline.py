@@ -1,6 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from abc import abstractmethod
-from utils.metadatastore import *
+from utils.mlflow.metadatastore import *
 
 class NewsPipeline(BaseEstimator,TransformerMixin):
 

@@ -7,7 +7,9 @@ import numpy as np
 from datetime import datetime
 
 from utils.newspipeline import NewsPipeline
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
+from TopicExtractor.src.utils.mlflow.pkgdeploy import *
+from TopicExtractor.src.utils.mlflow.pymodel import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 import os
@@ -45,7 +47,8 @@ class ModelValidation(NewsPipeline):
             with open(topicmodelfile,'wb') as plkfile:
                 pickle.dump(self.__model,plkfile)
             
-            self._addMLflowArtifact(topicmodelfile)
+            self.__pymodel = PyModel(self.__model)
+            #logModel(self.__pymodel)
             return True
         except Exception as ex:
             print(ex)

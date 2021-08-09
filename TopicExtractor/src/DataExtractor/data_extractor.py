@@ -10,7 +10,7 @@ import math
 from datetime import datetime, timedelta
 from TopicExtractor.src.utils.database import NewsDatabase
 from TopicExtractor.src.utils.newspipeline import NewsPipeline
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -35,6 +35,8 @@ class DataExtractor(NewsPipeline):
         if self.__config['StoreData']:
             today = datetime.today().strftime('%Y-%m-%d')
             filepath = os.path.join(DATA_PATH, today,self.__articlesDataFileName)
+            if not os.path.exists(os.path.join(DATA_PATH, today)):
+                os.makedirs(os.path.join(DATA_PATH, today))
             data.to_csv(filepath)
             self._addMLflowArtifact(filepath)
         

@@ -15,7 +15,7 @@ from datetime import datetime
 import sys
 
 from utils.newspipeline import NewsPipeline
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -64,8 +64,8 @@ class ModelEvaluation(NewsPipeline):
         alpha_range = list(np.arange(0.1,0.5,0.3))
         beta_range = list(np.arange(0.1,0.5,0.3))
 
-        alpha_range.extend(['asymmetric'])
-        beta_range.extend(['symmetric'])
+        # alpha_range.extend(['asymmetric'])
+        # beta_range.extend(['symmetric'])
         
         noofdocs = len(self.processeddata)
         corpus = self.corpus_tfidf
@@ -143,7 +143,6 @@ class ModelEvaluation(NewsPipeline):
             with open(topicmodelfile,'wb') as plkfile:
                 pickle.dump(self.__model,plkfile)
             
-            self._addMLflowArtifact(topicmodelfile)
             return True
         except Exception as ex:
             print(ex)

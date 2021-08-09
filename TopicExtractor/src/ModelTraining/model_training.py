@@ -12,7 +12,7 @@ from datetime import datetime
 import sys
 
 from utils.newspipeline import NewsPipeline
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -73,7 +73,6 @@ class ModelTraining(NewsPipeline):
             with open(topicmodelfile,'wb') as plkfile:
                 pickle.dump(self.__model,plkfile)
             
-            self._addMLflowArtifact(topicmodelfile)
             return True
         except Exception as ex:
             print(ex)

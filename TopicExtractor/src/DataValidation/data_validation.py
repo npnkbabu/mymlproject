@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import re
 from utils.newspipeline import NewsPipeline
-from TopicExtractor.src.utils.metadatastore import *
+from TopicExtractor.src.utils.mlflow.metadatastore import *
 from TopicExtractor.src.utils.pipelineconfig import PipelineConfig
 from nltk import word_tokenize
 
